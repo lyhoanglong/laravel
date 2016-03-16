@@ -1,0 +1,50 @@
+web:
+  build: ./images/nginx
+  ports: 
+    - "8081:8081"
+  volumes:
+    - ./src:/var/www
+    - ./src/appstore.conf:/etc/nginx/conf.d/appstore.conf
+  env_file: ./src/.env
+  container_name: appstore_web
+  working_dir: /var/www
+  links:
+    - php
+
+php:
+  image: nmcteam/php56
+  volumes:
+    - ./src/php-fpm.conf:/etc/php5/fpm/php-fpm.conf
+    - ./src:/var/www
+  container_name: appstore_php
+  working_dir: /var/www
+  env_file: ./src/.env
+  links:
+    - db
+    - redis
+
+node:
+  image: node
+  working_dir: /var/www
+  container_name: node
+  volumes:
+    - ./src:/var/www
+
+db:
+  image: sameersbn/mysql
+  volumes:
+    - /var/lib/mysql
+  container_name: appstore_db    
+  env_file: ./src/.env
+
+redis:
+  image: bitnami/redis
+  volumes:
+    - /var/lib/redis:/bitnami/redis/data
+  container_name: appstore_redis
+  env_file: ./src/.env
+
+
+
+
+
